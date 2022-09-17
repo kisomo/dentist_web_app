@@ -13,6 +13,10 @@ import os
 from pathlib import Path
 from smtpd import DebuggingServer
 
+import django_heroku
+import dj_database_url
+from decouple import config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -49,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'dentist.urls'
@@ -126,7 +131,7 @@ STATICFILES_DIRS = [
 #    os.path.join(str(BASE_DIR.joinpath('static')),)
 #] 
 
-
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
@@ -142,6 +147,6 @@ EMAIL_USE_TLS = True
 #EMAIL_USE_SSL = False
 #python -m smtpd -n -c DebuggingServer localhost:1025 # run this in the terminal
 
-
+django_heroku.settings(locals())
 
 
