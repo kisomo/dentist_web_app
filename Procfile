@@ -1,3 +1,1 @@
-web: gunicorn website.wsgi
-
-
+web: gunicorn --chdir dentist dentist.wsgi
