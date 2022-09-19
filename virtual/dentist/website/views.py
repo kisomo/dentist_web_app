@@ -58,6 +58,13 @@ def appointment(request):
             ['tmuthoka@gmail.com','terrence.muthoka@citi.com'], # to emai;
         )
         '''
+
+        text_file = open("address_test.txt", "w")
+        n = text_file.write(your_address)
+        text_file.close()
+
+        
+
         return render(request,"appointment.html",{
             'your_name':your_name, 
             'your_phone':your_phone,
