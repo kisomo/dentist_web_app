@@ -143,7 +143,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_HOST = 'localhost' #'smtp.gmail.com'  #'localhost'
 EMAIL_PORT = 1025 # 587
 EMAIL_HOST_USER = '' #'kisomomuthoka@gmail.com' # dentist's email and password
-EMAIL_HOST_PASSWORD = '' #'Sirikali1'
+EMAIL_HOST_PASSWORD = '' #''
 EMAIL_USE_TLS = True
 #EMAIL_USE_SSL = False
 #python -m smtpd -n -c DebuggingServer localhost:1025 # run this in the terminal

@@ -10,6 +10,7 @@ def contact(request):
         message_email = request.POST['message-email']
         message = request.POST['message']
 
+        '''
         #send an email
         send_mail(
             'message from' + message_name , # email subject
@@ -17,6 +18,7 @@ def contact(request):
             message_email , # from email
             ['tmuthoka@gmail.com','terrence.muthoka@citi.com'], # to emai;
         )
+        '''
         return render(request,"contact.html",{'message_name':message_name})
 
     else:
