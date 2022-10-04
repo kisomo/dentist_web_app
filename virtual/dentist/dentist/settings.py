@@ -138,7 +138,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 # Email settings
 EMAIL_HOST = 'localhost' #'smtp.gmail.com'  #'localhost'
 EMAIL_PORT = 1025 # 587
