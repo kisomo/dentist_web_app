@@ -1,5 +1,10 @@
 from django.shortcuts import render
 from django.core.mail import send_mail
+from . models import Venue
+
+def events(request):
+    event_list = Venue.objects.all()
+    return render(request, "events.html",{"event_list":event_list})
 
 def home(request):
     return render(request,"base.html")

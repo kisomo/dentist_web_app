@@ -1,0 +1,33 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+  <!-- ***** Header Area End ***** -->
+{% block content %}
+  <h1>Events</h1>
+  
+  {% for event in event_list %}
+  <div class="card">
+    <div class="card-header">
+        {{ event.vname }}
+    </div>
+    <div class="card-body">
+      <h5 class="card-title"> Venue: {{ event.vname }}</h5>
+      <p class="card-text"> 
+          <ul>
+            <li>Address: {{ event.address }}</li>
+            <li>Zip Code: {{ event.zip_code }}</li>
+            <li>Phone: {{ event.phone }}</li>
+            <li>Web: {{ event.web }}</li>
+            <li>Email: {{ event.email_address }}</li>
+         </ul>
+        </br></br>
+      </p>
+    </div>
+  </div>
+     
+  {% endfor %}
+  
+{% endblock %}
+  <!-- ***** Footer Area Start ***** -->
+  

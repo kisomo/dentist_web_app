@@ -17,6 +17,7 @@ urlpatterns = [
     path('pricing.html', views.pricing, name='pricing'),
     path('service.html', views.service, name='service'),
     path('appointment.html', views.appointment, name='appointment'),
+    path('events.html', views.events, name='events'),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
