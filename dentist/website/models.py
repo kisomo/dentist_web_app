@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 # Create your models here.
 
 #class Customer(models.Model):
@@ -9,7 +9,7 @@ class Nurse(models.Model):
     fname = models.CharField('Nurse First Name', max_length=200)
     lname = models.CharField('Nurse Last Name', max_length=200)
     phone = models.CharField('Nurse Phone', max_length=25)
-    emial = models.EmailField('Nurse Email', max_length=25)
+    email = models.EmailField('Nurse Email', max_length=25)
 
     def __str__(self):
         return self.fname + ' ' + self.lname
@@ -58,6 +58,7 @@ class Upcomming_apt(models.Model):
     nurses = models.ManyToManyField(Nurse, blank=True)
     is_done = models.BooleanField(default=False)
     description = models.TextField(blank=True)
+    assistance_tracker = models.ForeignKey(User,blank=True, null=True, on_delete=models.SET_NULL )
 
     def __str__(self):
         return self.fname 
@@ -73,6 +74,7 @@ class Finished_apt(models.Model):
     nurses = models.ManyToManyField(Nurse , blank=True, null=True)
     is_done = models.BooleanField(default=True)
     description = models.TextField(blank=True)
+    assistance_tracker = models.ForeignKey(User,blank=True, null=True, on_delete=models.SET_NULL )
 
     def __str__(self):
         return self.fname 

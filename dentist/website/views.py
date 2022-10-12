@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.core.mail import send_mail
 from . models import Venue
+from . import forms 
 
 def events(request):
     event_list = Venue.objects.all()
@@ -85,6 +86,15 @@ def appointment(request):
     else:
         return render(request,"base.html",{})
 
+
+def newDentist1(request):
+    context = {"form":forms.DentistForm()}
+    return render(request, "events.html", context)
+
+
+def newDentist(request):
+    form = forms.DentistForm2
+    return render(request, "events.html", {"form":form})
 
 
 

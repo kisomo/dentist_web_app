@@ -18,6 +18,7 @@ urlpatterns = [
     path('service.html', views.service, name='service'),
     path('appointment.html', views.appointment, name='appointment'),
     path('events.html', views.events, name='events'),
+    #path('events.html', views.newDentist, name='newDentist'),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
