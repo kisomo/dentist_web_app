@@ -28,13 +28,18 @@
      
   {% endfor %}
   
-  <h1>Add Dentist</h1>
-<form action="" method="POST">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <input type="submit" value="Submit" class="btn btn-secondary">
-</form>
-  
+  {% if submitted %}
+    You have submitted a new dentist
+  {% else %}
+    <div class="form-group">
+      <h1>Add Dentist</h1>
+      <form action="" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit" class="btn btn-secondary">
+      </form>
+    </div> 
+  {% endif %}
 {% endblock %}
   <!-- ***** Footer Area Start ***** -->
   

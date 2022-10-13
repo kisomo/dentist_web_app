@@ -1,11 +1,24 @@
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
 from . models import Venue
 from . import forms 
 
 def events(request):
     event_list = Venue.objects.all()
-    return render(request, "events.html",{"event_list":event_list})
+    submitted = False
+    form = forms.DentistForm2
+    if request.method=='POST':
+        form = forms.DentistForm2(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/events.html?submitted=True')
+    else:
+        form = forms.DentistForm2
+        if 'submitted' in request.GET:
+            submitted = True
+    return render(request, "events.html",{"event_list":event_list, "form":form, "submitted":submitted})
+
 
 def home(request):
     return render(request,"base.html")
@@ -86,15 +99,6 @@ def appointment(request):
     else:
         return render(request,"base.html",{})
 
-
-def newDentist1(request):
-    context = {"form":forms.DentistForm()}
-    return render(request, "events.html", context)
-
-
-def newDentist(request):
-    form = forms.DentistForm2
-    return render(request, "events.html", {"form":form})
 
 
 
