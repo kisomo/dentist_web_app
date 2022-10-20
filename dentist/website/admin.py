@@ -33,7 +33,7 @@ admin.site.register(Dentist, DentistAdmin)
 
 class upcoming_apt_Admin(admin.ModelAdmin):
     fields = (("venue","fname","lname","doc"),"phone_number","email_address","apt_time",
-    "nurses","is_done","description","assistance_track")
+    "nurses","is_done","description") #,"assistance_track")
     list_display = ("venue","fname","lname","doc","phone_number","email_address","apt_time")
     list_filter = ("apt_time","venue")
     ordering = ("fname",)

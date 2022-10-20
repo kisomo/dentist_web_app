@@ -1,7 +1,7 @@
 
 from django import forms 
 from django.forms import ModelForm
-from . models import Dentist
+from . models import Dentist, Venue
 
 '''
 class DentistForm(forms.Form):
@@ -24,5 +24,18 @@ class DentistForm2(ModelForm):
             'lname': forms.TextInput(attrs= {'class':'form-control'}),
             'qualification': forms.Select(attrs= {'class':'form-control'}),
             'experience_yrs': forms.TextInput(attrs= {'class':'form-control'}),
+        }
+
+class VenueForm(ModelForm):
+    class Meta:
+        model = Venue
+        fields = ("vname","address","zip_code","phone","web","email_address")
+        widgets = {
+            'vname': forms.TextInput(attrs= {'class':'form-control'}),
+            'address': forms.TextInput(attrs= {'class':'form-control'}),
+            'zip_code': forms.TextInput(attrs= {'class':'form-control'}),
+            'phone': forms.TextInput(attrs= {'class':'form-control'}),
+            'web': forms.TextInput(attrs= {'class':'form-control'}),
+            'email_address': forms.TextInput(attrs= {'class':'form-control'}),
         }
 

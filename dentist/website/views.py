@@ -1,23 +1,44 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
-from . models import Venue
+from . models import Venue, Upcomming_apt, Dentist
 from . import forms 
 
 def events(request):
-    event_list = Venue.objects.all()
-    submitted = False
-    form = forms.DentistForm2
+    event_list = Upcomming_apt.objects.all()
+    dentist_list = Dentist.objects.all()
+    venue_list = Venue.objects.all()
+    missed_apt_list = Upcomming_apt.objects.filter(is_done=0)
+
+    submitted_dentist = False
+    submitted_venue = False
+    #form = forms.DentistForm2
+    #form2 = forms.VenueForm
+    #dentistform = forms.DentistForm2(request.POST)
+    #venueform=forms.VenueForm(request.POST)
     if request.method=='POST':
-        form = forms.DentistForm2(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/events.html?submitted=True')
+        #form = forms.DentistForm2(request.POST)
+        dentistform = forms.DentistForm2(request.POST)
+        venueform=forms.VenueForm(request.POST)
+        if dentistform.is_valid():
+            dentistform.save()
+            return HttpResponseRedirect('/events.html?submitted_dentist=True')
+        else:
+            if venueform.is_valid():
+                venueform.save()
+                return HttpResponseRedirect('/events.html?submitted_venue=True')
     else:
-        form = forms.DentistForm2
-        if 'submitted' in request.GET:
-            submitted = True
-    return render(request, "events.html",{"event_list":event_list, "form":form, "submitted":submitted})
+        dentistform = forms.DentistForm2
+        venueform = forms.VenueForm
+        if 'submitted_dentis' in request.GET:
+            submitted_dentist = True
+        elif 'submitted_venue' in request.GET:
+            submitted_venue = True
+    
+    return render(request, "events.html",{"event_list":event_list,"dentist_list":dentist_list,
+    "venue_list":venue_list,
+     "dentistform":dentistform,"venueform":venueform, "submitted_dentist":submitted_dentist,
+     "submitted_venue":submitted_venue, "missed_apt_list":missed_apt_list})
 
 
 def home(request):

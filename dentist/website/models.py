@@ -58,7 +58,7 @@ class Upcomming_apt(models.Model):
     nurses = models.ManyToManyField(Nurse, blank=True)
     is_done = models.BooleanField(default=False)
     description = models.TextField(blank=True)
-    assistance_tracker = models.ForeignKey(User,blank=True, null=True, on_delete=models.SET_NULL )
+    #assistance_tracker = models.ForeignKey(User,blank=True, null=True, on_delete=models.SET_NULL )
 
     def __str__(self):
         return self.fname 
@@ -74,7 +74,7 @@ class Finished_apt(models.Model):
     nurses = models.ManyToManyField(Nurse , blank=True, null=True)
     is_done = models.BooleanField(default=True)
     description = models.TextField(blank=True)
-    assistance_tracker = models.ForeignKey(User,blank=True, null=True, on_delete=models.SET_NULL )
+    #assistance_tracker = models.ForeignKey(User,blank=True, null=True, on_delete=models.SET_NULL )
 
     def __str__(self):
         return self.fname 

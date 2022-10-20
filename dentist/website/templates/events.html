@@ -4,42 +4,190 @@
 
   <!-- ***** Header Area End ***** -->
 {% block content %}
-  <h1>Events</h1>
-  
+
+<style>
+  .events-container {
+  /*background-color: #283593;*/
+  background-color: #e8eaf6;
+  color: 3FFF;
+  margin:1px;
+  padding:1px;
+  display:flex;
+  justify-content: space-between;
+  padding:45px;
+  display:grid;
+  /*grid-template-columns: 300px 300px 300px;*/
+  /*grid-template-columns: 33% 33% 33%;*/
+  /*grid-template-columns: 1fr 1fr 1fr;*/
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-column-gap:45px
+}
+
+.events{
+  border-style: none;
+  max-height: 1000px;
+  overflow-y: auto;
+}
+
+.dentists{
+  border-style: none;
+  max-height: 1000px;
+  overflow-y: auto;
+}
+
+.dentist-list{
+  border-style: none;
+  margin-bottom: 10%;
+  background-color:#00aeef !important;
+  color:white;
+  text-align: center;
+}
+
+.add-dentist{
+  border-style: none;
+  margin-top: 10%;
+}
+
+.venues{
+  border-style: none;
+  max-height: 1000px;
+  overflow-y: auto;
+}
+.venue-list{
+  border-style: none;
+  margin-bottom: 10%;
+  background-color:#00aeef !important;
+  color:white;
+  text-align: center;
+}
+.add-venues{
+  border-style: none;
+  margin-top: 10%;
+}
+
+.missed-apts{
+  border-style:double;
+  margin:2%;
+  padding:2%;
+
+}
+.missed-apts h3{
+  font-family: "Lucida Console", "Courier New", monospace;
+  background-color:red;
+}
+</style>
+
+
+
+<div class="events-container">
+
+  <div class="events">
+  <h3>Upcomming Appointments</h3>
   {% for event in event_list %}
   <div class="card">
-    <div class="card-header">
-        {{ event.vname }}
-    </div>
+    <!-- <div class="card-header">
+        {{ event.venue }}
+    </div> -->
     <div class="card-body">
-      <h5 class="card-title"> Venue: {{ event.vname }}</h5>
+      <h5 class="card-title"> Venue: {{ event.venue }}</h5>
       <p class="card-text"> 
           <ul>
-            <li>Address: {{ event.address }}</li>
-            <li>Zip Code: {{ event.zip_code }}</li>
-            <li>Phone: {{ event.phone }}</li>
-            <li>Web: {{ event.web }}</li>
+            <li>Doctor: {{ event.doc }}</li>
+            <li>First Name: {{ event.fname }}</li>
+            <li>Last Name: {{ event.lname }}</li>
+            <li>Appointment time : {{ event.apt_time }} </li>
+            <li>Phone: {{ event.phone_number }}</li>
             <li>Email: {{ event.email_address }}</li>
+            <li>Status: {{ event.is_done }}</li>
          </ul>
         </br></br>
       </p>
     </div>
-  </div>
-     
+  </div> 
   {% endfor %}
+  </div>
   
-  {% if submitted %}
-    You have submitted a new dentist
-  {% else %}
-    <div class="form-group">
-      <h1>Add Dentist</h1>
-      <form action="" method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Submit" class="btn btn-secondary">
-      </form>
-    </div> 
-  {% endif %}
+  <div class="dentists">
+    <!--<h3>Dentists</h3>-->
+    <div class="dentist-list">
+      <h3> Dentist list</h3>
+      {% for dentist in dentist_list %}
+       <ul>
+        <li>First Name: {{ dentist.fname }}</li>
+        <li>Last Name: {{ dentist.lname }}</li>
+        <li>Qualification: {{ dentist.qualification }}</li>
+        <li>College: {{ dentist.college }}</li>
+        <li>Experience: {{ dentist.experience_yrs }}</li>
+       </ul>
+      </br>
+      {% endfor %}
+    </div>
+    <div class="add-dentist">
+      <h3>Add Dentist</h3>
+      {% if submitted %}
+      You have submitted a new dentist
+      {% else %}
+      <div class="form-group">
+        <form action="" method="POST">
+          {% csrf_token %}
+          {{ dentistform.as_p }}
+          <input type="submit" value="Submit" class="btn btn-secondary">
+        </form>
+      </div> 
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="venues">
+    <!--<h3>Venues</h3>-->
+    <div class="venue-list">
+      <h3> Venue list</h3>
+      {% for venue in venue_list %}
+       <ul>
+        <li>Venue Name: {{ venue.vname}}</li>
+        <li>Venue Address: {{ venue.address}}</li>
+        <li>Venue Zip Code: {{ venue.zip_code}}</li>
+        <li>Venue Phone: {{ venue.phone}}</li>
+        <li>Venue web URL: {{ venue.web}}</li>
+        <li>email address: {{ venue.email_address}}</li>
+       </ul></br>
+      {% endfor %}
+    </div>
+    <div class="add-venue">
+      <h3>add venue</h3>
+      {% if submitted %}
+      You have submitted a new Venue
+      {% else %}
+      <div class="form-group">
+        <form action="" method="POST">
+          {% csrf_token %}
+          {{ venueform.as_p }}
+          <input type="submit" value="Submit" class="btn btn-secondary">
+        </form>
+      </div> 
+      {% endif %}
+    </div>
+  </div>
+
+ 
+</div>
+
+<div class="missed-apts">
+  <h3>misses appointments</h3>
+  {% for apt in missed_apt_list %}
+  <ul>
+    <li>Doctor: {{ apt.doc }}</li>
+    <li>First Name: {{ apt.fname }}</li>
+    <li>Last Name: {{ apt.lname }}</li>
+    <li>Appointment time : {{ apt.apt_time }} </li>
+    <li>Phone: {{ apt.phone_number }}</li>
+    <li>Email: {{ apt.email_address }}</li>
+    <li>Status: {{ apt.is_done }}</li>
+  </ul>
+</br>
+  {% endfor %}
+</div>
+
 {% endblock %}
   <!-- ***** Footer Area Start ***** -->
   
