@@ -29,6 +29,14 @@
   overflow-y: auto;
 }
 
+.card-body{
+  display: flex;
+  justify-content: space-between;
+  flex-direction:row;
+  flex-wrap: auto;
+  /*flex-wrap: nowrap;*/
+}
+
 .dentists{
   border-style: none;
   max-height: 1000px;
@@ -103,8 +111,32 @@
         </br></br>
       </p>
     </div>
+    <div class="card-footer text-muted">
+      <a href="events.html" class="btn btn-outline-secondary btn-sm">update appointment</a>
+      <a href="events.html" class="btn btn-outline-danger btn-sm">delete appointment</a>
+    </div>
   </div> 
   {% endfor %}
+  <div class="card-footer text-muted">
+    <a href="events.html" class="btn btn-outline-secondary btn-sm">download text file</a>
+    <a href="events.html" class="btn btn-outline-danger btn-sm">download csv</a>
+  </div>
+  <div class="card-footer text-muted">
+    <a href="events.html" class="btn btn-outline-danger btn-sm">download pdf</a>
+  </div>
+
+  {% if event_list.has_previous %}
+    <a href="?page=1">&laquo First</a>
+    <a href="?page={{ event_list.previous_page_number }}">Previous</a>
+  {% endif %}
+
+   Page {{ event_list.number }} of {{ event_list.paginator.num_pages }}
+   
+  {% if event_list.has_next %}
+   <a href="?page = {{ event_list.next_page_number }}">next</a>
+   <a href="?page = {{ event_list.paginator.num_pages }}">last &raquo</a>
+  {% endif %}
+
   </div>
   
   <div class="dentists">
@@ -112,6 +144,7 @@
     <div class="dentist-list">
       <h3> Dentist list</h3>
       {% for dentist in dentist_list %}
+      <p>
        <ul>
         <li>First Name: {{ dentist.fname }}</li>
         <li>Last Name: {{ dentist.lname }}</li>
@@ -119,7 +152,8 @@
         <li>College: {{ dentist.college }}</li>
         <li>Experience: {{ dentist.experience_yrs }}</li>
        </ul>
-      </br>
+       </br>
+      </p>
       {% endfor %}
     </div>
     <div class="add-dentist">

@@ -1,13 +1,27 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
+from django.http import HttpResponseRedirect, HttpResponse, HttpRequest, StreamingHttpResponse, FileResponse
 from django.core.mail import send_mail
 from . models import Venue, Upcomming_apt, Dentist
 from . import forms 
+import csv 
+import io 
+import reportlab
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
+
+from django.core.paginator import Paginator
 
 def events(request):
-    event_list = Upcomming_apt.objects.all()
-    dentist_list = Dentist.objects.all()
-    venue_list = Venue.objects.all()
+    #event_list = Upcomming_apt.objects.all().order_by("-apt_time","lname")
+    # set up pagination
+    p = Paginator(Upcomming_apt.objects.all().order_by("-apt_time","lname"), 3)
+    page = request.GET.get("page")
+    event_list = p.get_page(page)
+
+    dentist_list = Dentist.objects.all().order_by("lname")
+    venue_list = Venue.objects.all().order_by("vname")
     missed_apt_list = Upcomming_apt.objects.filter(is_done=0)
 
     submitted_dentist = False
@@ -121,6 +135,61 @@ def appointment(request):
         return render(request,"base.html",{})
 
 
+def delete_appointment(request, appointment_id):
+    appointment = Upcomming_apt.objects.get(pk=appointment_id)
+    appointment.delete()
+    return redirect("events.html")
+
+def appointment_txt_file(request, submitted_id):
+    response = HttpResponse(content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename=appointments.txt'
+    lines = [] #['This is line 1\n','This is line 2\n']
+    appointments = Upcomming_apt.objects.all()
+    for appointment in appointments:
+        lines.append(f'{appointment.doc}\n{appointment.venue}\n{appointment.fname}\n\n')
+    response.writelines(lines)
+    return response
+
+def appointment_csv_file(reuqest, submitted_id):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=appointments.csv'
+    writer = csv.writer(response)
+
+    #lines = [] #['This is line 1\n','This is line 2\n']
+    appointments = Upcomming_apt.objects.all()
+    # add column headings 
+    writer.writerow(['Doctor', 'Venue', 'First Name'])
+    for appointment in appointments:
+        writer.writerow([appointment.doc, appointment.venue, appointment.fname])
+    return response
+
+def appointment_pdf_file(request, submitted_id):
+    #create bytestream buffer
+    buf = io.BytesIO()
+    # create canvas
+    c = canvas.Canvas(buf, pagesize=letter,bottomup=0)
+    #create the text object
+    textob= c.beginText()
+    textob.setTextOrigin(inch, inch)
+    textob.setFront("Helvetica", 14)
+
+    lines = [] #['This is line 1\n','This is line 2\n']
+    appointments = Upcomming_apt.objects.all()
+    for appointment in appointments:
+        lines.append(appointment.doc)
+        lines.append(appointment.venue)
+        lines.append(appointment.fname)
+        lines.append("=====================================================")
+
+    for line in lines:
+        textob.textLine(line)
+
+    c.drawText(textob)
+    c.showPage()
+    c.save()
+    buf.seek(0)
+
+    return FileResponse(buf, as_attachment=True, filename='appointments.pdf')
 
 
 
