@@ -16,9 +16,10 @@ from django.core.paginator import Paginator
 def events(request):
     #event_list = Upcomming_apt.objects.all().order_by("-apt_time","lname")
     # set up pagination
-    p = Paginator(Upcomming_apt.objects.all().order_by("-apt_time","lname"), 3)
+    p = Paginator(Upcomming_apt.objects.all().order_by("-apt_time","lname"), 2)
     page = request.GET.get("page")
     event_list = p.get_page(page)
+    apt_nums = "a"*event_list.paginator.num_pages
 
     dentist_list = Dentist.objects.all().order_by("lname")
     venue_list = Venue.objects.all().order_by("vname")
@@ -52,7 +53,8 @@ def events(request):
     return render(request, "events.html",{"event_list":event_list,"dentist_list":dentist_list,
     "venue_list":venue_list,
      "dentistform":dentistform,"venueform":venueform, "submitted_dentist":submitted_dentist,
-     "submitted_venue":submitted_venue, "missed_apt_list":missed_apt_list})
+     "submitted_venue":submitted_venue, "missed_apt_list":missed_apt_list,
+     "apt_nums":apt_nums})
 
 
 def home(request):

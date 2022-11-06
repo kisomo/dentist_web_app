@@ -125,19 +125,36 @@
     <a href="events.html" class="btn btn-outline-danger btn-sm">download pdf</a>
   </div>
 
-  {% if event_list.has_previous %}
-    <a href="?page=1">&laquo First</a>
-    <a href="?page={{ event_list.previous_page_number }}">Previous</a>
-  {% endif %}
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      {% if event_list.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page=1">&laquo First</a></li>
+        <li class="page-item"></li><a class="page-link" href="?page={{ event_list.previous_page_number }}">
+          Previous</a></li>
+      {% endif %}
 
-   Page {{ event_list.number }} of {{ event_list.paginator.num_pages }}
-   
-  {% if event_list.has_next %}
-   <a href="?page = {{ event_list.next_page_number }}">next</a>
-   <a href="?page = {{ event_list.paginator.num_pages }}">last &raquo</a>
-  {% endif %}
-
+      <!-- apt_nums = event_list.paginator.num_pages -->
+      <!-- 
+      <li class="page-item disabled"><a href="#" class="page-link">
+        Page {{ event_list.number }} of {{ event_list.paginator.num_pages }}
+        </a>
+      </li>
+      -->
+      {% for i in apt_nums %}
+      <li class="page-item">
+        <a class="page-link" href="?page = {{ forloop.counter }}">{{ forloop.counter }}</a>
+      </li>
+      {% endfor %}
+      
+      {% if event_list.has_next %}
+      <li class="page-item"><a class="page-link" href="?page = {{ event_list.next_page_number }}">next</a></li>
+      <li class="page-item"><a class="page-link" href="?page = {{ event_list.paginator.num_pages }}">
+        last &raquo</a></li>
+      {% endif %}
+    </ul>
+  </nav>
   </div>
+  
   
   <div class="dentists">
     <!--<h3>Dentists</h3>-->

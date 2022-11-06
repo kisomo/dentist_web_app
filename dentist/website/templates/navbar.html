@@ -117,7 +117,13 @@
                           </ul>
                         </li>
                         <li><a href="./contact.html">Contact</a></li>
-                        <li><a href="./events.html">Events</a></li>
+                        <!-- <li><a href="./events.html">Events</a></li> -->
+                        {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+                        {% else %}
+                        <li class="nav-item"><a class="nav-link" href="members/authentication/login.html">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'register_user' %}">Sign Up</a></li>
+                        {% endif %}
                       </ul>
                     </div>
                     <!-- Nav End -->
