@@ -83,6 +83,42 @@
   font-family: "Lucida Console", "Courier New", monospace;
   background-color:red;
 }
+
+.security-check{
+  border-style:double;
+  display:flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  margin:2%;
+  padding:2%;
+}
+.security-body{
+  border-style:none;
+  display:flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin:2%;
+  padding:2%;
+}
+.security-check h2{
+  font-family:Arial, Helvetica, sans-serif;
+  text-align: center;
+}
+.button-html{
+  border-style: groove;
+  max-height: 1000px;
+  overflow-y: auto;
+}
+.button-py{
+  border-style: groove;
+  max-height: 1000px;
+  overflow-y: auto;
+}
+.button-cpp{
+  border-style: groove;
+  max-height: 1000px;
+  overflow-y: auto;
+}
 </style>
 
 
@@ -155,7 +191,6 @@
   </nav>
   </div>
   
-  
   <div class="dentists">
     <!--<h3>Dentists</h3>-->
     <div class="dentist-list">
@@ -220,7 +255,6 @@
     </div>
   </div>
 
- 
 </div>
 
 <div class="missed-apts">
@@ -238,6 +272,42 @@
 </br>
   {% endfor %}
 </div>
+
+<div class="security-check">
+  <div class="security-title">
+    <h2>Security Status</h2>
+  </div>
+  
+  <div class="security-body">
+    <div class="button-html">
+      <button onclick="location.href='{% url 'web_script' %}'"> execute web data</button><hr>
+      {% if web_data %}
+        {{ web_data | safe }}
+      {% endif %}
+    </div>
+    
+    <div class="button-py">
+      <form action="/external_py/" method="post">
+        {% csrf_token %}
+        Input Text:
+        <input type="text" name="param" required><br><br>
+        {{web_data2}}<br><br>
+        <input type="submit" value="Execute external Python script"> <br><br>
+      </form>
+    </div>
+
+    <div class="button-cpp">
+      <form action="/external_cpp/" method="post">
+        {% csrf_token %}
+        Input Text:
+        <input type="text" name="param" required><br><br>
+        {{web_data3}}<br><br>
+        <input type="submit" value="Execute external C++ script"> <br><br>
+      </form>
+    </div>
+</div>
+</div>
+
 
 {% endblock %}
   <!-- ***** Footer Area Start ***** -->

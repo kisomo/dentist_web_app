@@ -18,6 +18,13 @@ urlpatterns = [
     path('service.html', views.service, name='service'),
     path('appointment.html', views.appointment, name='appointment'),
     path('events.html', views.events, name='events'),
-
+    path(r'web_output', views.web_output, name='web_script'),
+    path(r'external_py/', views.external_py, name='external_py'),
+    path(r'external_cpp/', views.external_cpp, name='external_cpp'),
+    
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+
+
+
 

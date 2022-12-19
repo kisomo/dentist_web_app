@@ -194,4 +194,46 @@ def appointment_pdf_file(request, submitted_id):
     return FileResponse(buf, as_attachment=True, filename='appointments.pdf')
 
 
+def web_output(request):
+    import requests
+    data1 = requests.get("https://kitui.go.ke/countygovt/opportunities/tenders/")
+    #data1 = requests.get("https://www.google.com/")
+    web_data = data1.text
+    #web_data = data1.json()
+    #web_data = data1.headers['content-type']
+    return render(request, "events.html", {"web_data":web_data})
+
+import sys, os, subprocess
+from subprocess import run, PIPE
+def external_py(request):
+    inp = request.POST.get('param')
+    out = run([sys.executable, '/home/terrence/MODELS/dentist/dentist/website/tests.py',inp], 
+    shell=False, stdout=PIPE)
+    print(out)
+    return render(request, 'events.html',{"web_data2":out.stdout})
+
+def external_cpp(request):
+    '''
+    inp = request.POST.get('param')
+    out = run([sys.executable, '/home/terrence/MODELS/dentist/dentist/website/tests.py',inp], 
+    shell=False, stdout=PIPE)
+    print(out)
+    return render(request, 'events.html',{"web_data2":out.stdout})
+    '''
+    # create a pipe to a child process
+    data, temp = os.pipe()
+    
+    inp = request.POST.get('param')
+    # write to STDIN as a byte object(convert string
+    # to bytes with encoding utf8)
+    os.write(temp, bytes("5 10\n", "utf-8"));
+    os.close(temp)
+    # store output of the program as a byte string in s
+    out = subprocess.check_output("g++ /home/terrence/MODELS/dentist/dentist/website/split_string.cpp -o out2;./out2", 
+    stdin = data, shell = True)
+    # decode s to a normal string
+    print(out.decode("utf-8"))
+    return render(request, 'events.html',{"web_data3":out})
+
+
 
