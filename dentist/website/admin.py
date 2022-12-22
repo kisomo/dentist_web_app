@@ -1,10 +1,8 @@
 from django.contrib import admin
 
-from . models import Venue, Upcomming_apt, Finished_apt, Dentist, Nurse #, Customer
+from . models import Venue, Upcomming_apt, Finished_apt, Dentist, Nurse, Webdata, Cppdata, Htmldata
 
 
-#admin.site.register(Customer)
-#admin.site.register(Upcomming_apt)
 admin.site.register(Finished_apt)
 
 
@@ -28,7 +26,6 @@ class DentistAdmin(admin.ModelAdmin):
     list_display = ("fname","lname","qualification","college", "experience_yrs")
     ordering = ("fname",)
     search_fields = ("fname","experience_yrs")
-
 admin.site.register(Dentist, DentistAdmin)
 
 class upcoming_apt_Admin(admin.ModelAdmin):
@@ -38,4 +35,10 @@ class upcoming_apt_Admin(admin.ModelAdmin):
     list_filter = ("apt_time","venue")
     ordering = ("fname",)
 admin.site.register(Upcomming_apt, upcoming_apt_Admin)
+
+admin.site.register(Webdata)
+
+admin.site.register(Cppdata)
+
+admin.site.register(Htmldata)
 

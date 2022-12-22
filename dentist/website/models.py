@@ -79,5 +79,25 @@ class Finished_apt(models.Model):
     def __str__(self):
         return self.fname 
 
+class Htmldata(models.Model):
+    data_link = models.CharField('Data Link', max_length=200)
+    data_name = models.CharField('Data Name', max_length=200)
 
+    def __str__(self):
+        return self.data_link 
 
+class Webdata(models.Model):
+    firstname = models.CharField('First Name', max_length=200)
+    lastname = models.CharField('Last Name', max_length=200)
+    querytime = models.DateTimeField('Query Time', blank=True, null=True)
+    querysite = models.URLField('Website to Query')
+
+    def __str__(self):
+        return self.firstname + ' ' + self.lastname
+
+class Cppdata(models.Model):
+    file_name = models.CharField('File Name', max_length=200)
+    file_location = models.CharField('File Location', max_length=200)
+    file_extension = models.CharField('File Extension', max_length=200)
+    def __str__(self):
+        return self.file_name + ' ' + self.file_location + '' + self.file_extension

@@ -21,6 +21,9 @@ urlpatterns = [
     path(r'web_output', views.web_output, name='web_script'),
     path(r'external_py/', views.external_py, name='external_py'),
     path(r'external_cpp/', views.external_cpp, name='external_cpp'),
+    path(r'getWebdata/', views.getWebdata, name='getWebdata'),
+    path('search_venues', views.search_venues, name='search-venues'),
+    path('update_appt/<upcomming_apt_id>', views.update_appt, name='update-appt'),
     
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.http import HttpResponseRedirect, HttpResponse, HttpRequest, StreamingHttpResponse, FileResponse
 from django.core.mail import send_mail
-from . models import Venue, Upcomming_apt, Dentist
+from . models import Venue, Upcomming_apt, Dentist, Webdata, Cppdata, Htmldata
 from . import forms 
 import csv 
 import io 
@@ -16,10 +16,11 @@ from django.core.paginator import Paginator
 def events(request):
     #event_list = Upcomming_apt.objects.all().order_by("-apt_time","lname")
     # set up pagination
-    p = Paginator(Upcomming_apt.objects.all().order_by("-apt_time","lname"), 2)
-    page = request.GET.get("page")
-    event_list = p.get_page(page)
-    apt_nums = "a"*event_list.paginator.num_pages
+    p = Paginator(Upcomming_apt.objects.all().order_by("-apt_time","lname"), 3)
+    page_num = request.GET.get("page",1)
+    event_list = p.get_page(page_num)
+    #apt_nums = "a"*event_list.paginator.num_pages
+    apt_nums = "a"*p.num_pages
 
     dentist_list = Dentist.objects.all().order_by("lname")
     venue_list = Venue.objects.all().order_by("vname")
@@ -27,34 +28,63 @@ def events(request):
 
     submitted_dentist = False
     submitted_venue = False
-    #form = forms.DentistForm2
-    #form2 = forms.VenueForm
-    #dentistform = forms.DentistForm2(request.POST)
-    #venueform=forms.VenueForm(request.POST)
+    submitted_web = False
+    submitted_cpp = False
+    submitted_html = False
+    
     if request.method=='POST':
         #form = forms.DentistForm2(request.POST)
         dentistform = forms.DentistForm2(request.POST)
         venueform=forms.VenueForm(request.POST)
+        form_data = forms.WebdataForm(request.POST)
+        cpp_data = forms.CppdataForm(request.POST)
+        html_data = forms.HtmldataForm(request.POST)
+        #if all([dentistform.is_valid(),venueform.is_valid()]):
         if dentistform.is_valid():
             dentistform.save()
+            #venueform.save()
             return HttpResponseRedirect('/events.html?submitted_dentist=True')
+            #return HttpResponseRedirect('/events.html?submitted_dentist=True?submitted_venue=True')
+        elif venueform.is_valid():
+            venueform.save()
+            return HttpResponseRedirect('/events.html?submitted_venue=True')
+        elif html_data.is_valid():
+            html_data.save()
+            return HttpResponseRedirect('/events.html?submitted_html=True')
+        #elif 'py2' in request.POST:
+        elif form_data.is_valid():
+            form_data.save()
+            return HttpResponseRedirect('/events.html?submitted_web=True')
+        elif cpp_data.is_valid():
+            cpp_data.save()
+            return HttpResponseRedirect('/events.html?submitted_cpp=True')
         else:
-            if venueform.is_valid():
-                venueform.save()
-                return HttpResponseRedirect('/events.html?submitted_venue=True')
+            #return render(request, "events.html",{})
+            return HttpResponseRedirect('/events.html')
     else:
         dentistform = forms.DentistForm2
         venueform = forms.VenueForm
-        if 'submitted_dentis' in request.GET:
+        form_data = forms.WebdataForm()
+        cpp_data = forms.CppdataForm()
+        html_data = forms.HtmldataForm()
+        if 'submitted_dentist' in request.GET:
             submitted_dentist = True
         elif 'submitted_venue' in request.GET:
             submitted_venue = True
+        elif 'submitted_web' in request.GET:
+            submitted_web = True
+        elif 'submitted_cpp' in request.GET:
+            submitted_cpp = True
+        elif 'submitted_html' in request.GET:
+            submitted_html = True
     
     return render(request, "events.html",{"event_list":event_list,"dentist_list":dentist_list,
     "venue_list":venue_list,
      "dentistform":dentistform,"venueform":venueform, "submitted_dentist":submitted_dentist,
-     "submitted_venue":submitted_venue, "missed_apt_list":missed_apt_list,
-     "apt_nums":apt_nums})
+     "submitted_venue":submitted_venue,"submitted_web":submitted_web, "submitted_cpp":submitted_cpp,
+     "submitted_html":submitted_html,
+     "missed_apt_list":missed_apt_list, "apt_nums":apt_nums, "form_data":form_data, "cpp_data":cpp_data,
+     "html_data":html_data})
 
 
 def home(request):
@@ -196,21 +226,26 @@ def appointment_pdf_file(request, submitted_id):
 
 def web_output(request):
     import requests
-    data1 = requests.get("https://kitui.go.ke/countygovt/opportunities/tenders/")
-    #data1 = requests.get("https://www.google.com/")
-    web_data = data1.text
-    #web_data = data1.json()
-    #web_data = data1.headers['content-type']
-    return render(request, "events.html", {"web_data":web_data})
+    #ata1 = requests.get("https://kitui.go.ke/countygovt/opportunities/tenders/")
+    data1 = requests.get("https://www.google.com/")
+    if data1:
+        web_data = data1.text
+        #web_data = data1.json()
+        #web_data = data1.headers['content-type']
+        return render(request, "events.html", {"web_data":web_data})
+    return render(request, "events.html", {})
 
-import sys, os, subprocess
+import sys, os, subprocess, calendar, datetime
+from calendar import HTMLCalendar
 from subprocess import run, PIPE
 def external_py(request):
-    inp = request.POST.get('param')
-    out = run([sys.executable, '/home/terrence/MODELS/dentist/dentist/website/tests.py',inp], 
-    shell=False, stdout=PIPE)
-    print(out)
-    return render(request, 'events.html',{"web_data2":out.stdout})
+    if 'py' in request.POST:
+        inp = request.POST.get('py')
+        out = run([sys.executable, '/home/terrence/MODELS/dentist/dentist/website/tests.py',inp], 
+        shell=False, stdout=PIPE)
+        #print(out)
+        return render(request, 'events.html',{"web_data2":out.stdout})
+    return render(request, 'events.html')
 
 def external_cpp(request):
     '''
@@ -222,18 +257,45 @@ def external_cpp(request):
     '''
     # create a pipe to a child process
     data, temp = os.pipe()
-    
-    inp = request.POST.get('param')
-    # write to STDIN as a byte object(convert string
-    # to bytes with encoding utf8)
-    os.write(temp, bytes("5 10\n", "utf-8"));
-    os.close(temp)
-    # store output of the program as a byte string in s
-    out = subprocess.check_output("g++ /home/terrence/MODELS/dentist/dentist/website/split_string.cpp -o out2;./out2", 
-    stdin = data, shell = True)
-    # decode s to a normal string
-    print(out.decode("utf-8"))
-    return render(request, 'events.html',{"web_data3":out})
+    if 'cpp' in request.POST:
+        inp = request.POST.get('cpp')
+        # write to STDIN as a byte object(convert string
+        # to bytes with encoding utf8)
+        os.write(temp, bytes("5 10\n", "utf-8"));
+        os.close(temp)
+        # store output of the program as a byte string in s
+        out = subprocess.check_output("g++ /home/terrence/MODELS/dentist/dentist/website/split_string.cpp -o out2;./out2", 
+        stdin = data, shell = True)
+        # decode s to a normal string
+        print(out.decode("utf-8"))
+        return render(request, 'events.html',{"web_data3":out})
+    return render(request, 'events.html')
+
+
+def getWebdata(request):
+    form_data = forms.WebdataForm()
+    #   if form_data.is_valid():
+    #        form_data.save()
+    #        return HttpResponseRedirect('events.html')
+    return render(request, "events.html",{"form_data":form_data})
+    #return render(request, "events.html",{})
+
+def search_venues(request):
+    if request.method=='POST':
+        searched = request.POST['searched']
+        venues = Venue.objects.filter(zip_code=searched)
+        return render(request, "search_venues.html",{"searched":searched,
+        "venues":venues})
+    else:
+        return render(request, "search_venues.html",{})
+
+def update_appt(request, upcomming_apt_id):
+    appt = Upcomming_apt.objects.get(pk=upcomming_apt_id)
+    form = forms.Upcoming_aptForm(request.POST or None, instance=appt)
+    if form.is_valid():
+        form.save()
+        return redirect('events')
+    return render(request, "update_appt.html",{"appt":appt,"form":form})
 
 
 
