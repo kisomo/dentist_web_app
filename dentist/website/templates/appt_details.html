@@ -11,22 +11,18 @@
 
   <!-- ***** Header Area End ***** -->
 {% block content %}
- <center>
-   {% if searched %}
-     You searched for {{searched}} <br><br>
-     {% for venue in venues %}
-       <a href="">{{venue}}</a> <br>
-       {{venue.zip_code}} <br>
-       {{venue.address}} <br>
-       {{venue.phone}} <br>
-       {{venue.web}} <br><br>
-     {% endfor %} 
-     {{owners}}
-   {% else %}
-     bad search
-   {% endif %}
- </center>
-
+ 
+    <ul>
+        <li>Doctor: {{ appts.doc }}</li>
+        <li>First Name: {{ appts.fname }}</li>
+        <li>Last Name: {{ appts.lname }}</li>
+        <li>Appointment time : {{ appts.apt_time }} </li>
+        <li>Phone: {{ appts.phone_number }}</li>
+        <li>Email: {{ appts.email_address }}</li>
+        <li>Status: {{ appts.is_done }}</li>
+        <li>Days till: {{ appts.Days_till }}</li>
+        <li>Past: {{ appts.Is_past }}</li>
+    </ul> 
+ 
 {% endblock %}
-  <!-- ***** Footer Area Start ***** -->
   

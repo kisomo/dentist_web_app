@@ -11,19 +11,23 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
 
+from django.contrib.auth.models import User
+
 from django.core.paginator import Paginator
+from django.contrib import messages
 
 def events(request):
     #event_list = Upcomming_apt.objects.all().order_by("-apt_time","lname")
     # set up pagination
     p = Paginator(Upcomming_apt.objects.all().order_by("-apt_time","lname"), 3)
-    page_num = request.GET.get("page",1)
+    page_num = request.GET.get("page")
     event_list = p.get_page(page_num)
     #apt_nums = "a"*event_list.paginator.num_pages
     apt_nums = "a"*p.num_pages
 
     dentist_list = Dentist.objects.all().order_by("lname")
     venue_list = Venue.objects.all().order_by("vname")
+    
     missed_apt_list = Upcomming_apt.objects.filter(is_done=0)
 
     submitted_dentist = False
@@ -35,7 +39,9 @@ def events(request):
     if request.method=='POST':
         #form = forms.DentistForm2(request.POST)
         dentistform = forms.DentistForm2(request.POST)
-        venueform=forms.VenueForm(request.POST)
+        venueform=forms.VenueForm(request.POST, request.FILES)
+        venueform.owner = request.user.id
+
         form_data = forms.WebdataForm(request.POST)
         cpp_data = forms.CppdataForm(request.POST)
         html_data = forms.HtmldataForm(request.POST)
@@ -62,8 +68,8 @@ def events(request):
             #return render(request, "events.html",{})
             return HttpResponseRedirect('/events.html')
     else:
-        dentistform = forms.DentistForm2
-        venueform = forms.VenueForm
+        dentistform = forms.DentistForm2()
+        venueform = forms.VenueForm()
         form_data = forms.WebdataForm()
         cpp_data = forms.CppdataForm()
         html_data = forms.HtmldataForm()
@@ -78,7 +84,8 @@ def events(request):
         elif 'submitted_html' in request.GET:
             submitted_html = True
     
-    return render(request, "events.html",{"event_list":event_list,"dentist_list":dentist_list,
+    return render(request, "events.html",{"event_list":event_list,
+    "dentist_list":dentist_list,
     "venue_list":venue_list,
      "dentistform":dentistform,"venueform":venueform, "submitted_dentist":submitted_dentist,
      "submitted_venue":submitted_venue,"submitted_web":submitted_web, "submitted_cpp":submitted_cpp,
@@ -167,12 +174,12 @@ def appointment(request):
         return render(request,"base.html",{})
 
 
-def delete_appointment(request, appointment_id):
+def delete_appt(request, appointment_id):
     appointment = Upcomming_apt.objects.get(pk=appointment_id)
     appointment.delete()
-    return redirect("events.html")
+    return redirect("events")
 
-def appointment_txt_file(request, submitted_id):
+def appointment_txt(request):
     response = HttpResponse(content_type='text/plain')
     response['Content-Disposition'] = 'attachment; filename=appointments.txt'
     lines = [] #['This is line 1\n','This is line 2\n']
@@ -182,7 +189,7 @@ def appointment_txt_file(request, submitted_id):
     response.writelines(lines)
     return response
 
-def appointment_csv_file(reuqest, submitted_id):
+def appointment_csv(reuqest):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=appointments.csv'
     writer = csv.writer(response)
@@ -195,7 +202,7 @@ def appointment_csv_file(reuqest, submitted_id):
         writer.writerow([appointment.doc, appointment.venue, appointment.fname])
     return response
 
-def appointment_pdf_file(request, submitted_id):
+def appointment_pdf(request):
     #create bytestream buffer
     buf = io.BytesIO()
     # create canvas
@@ -203,7 +210,7 @@ def appointment_pdf_file(request, submitted_id):
     #create the text object
     textob= c.beginText()
     textob.setTextOrigin(inch, inch)
-    textob.setFront("Helvetica", 14)
+    textob.setFont("Helvetica", 14)
 
     lines = [] #['This is line 1\n','This is line 2\n']
     appointments = Upcomming_apt.objects.all()
@@ -284,18 +291,93 @@ def search_venues(request):
     if request.method=='POST':
         searched = request.POST['searched']
         venues = Venue.objects.filter(zip_code=searched)
+        owners =[]
+        for venue in venues:
+            owners.append(User.objects.get(pk=venue.owner))
         return render(request, "search_venues.html",{"searched":searched,
-        "venues":venues})
+        "venues":venues, "owners":owners})
     else:
         return render(request, "search_venues.html",{})
 
 def update_appt(request, upcomming_apt_id):
     appt = Upcomming_apt.objects.get(pk=upcomming_apt_id)
-    form = forms.Upcoming_aptForm(request.POST or None, instance=appt)
+    #appt.manager = request.user.id
+    form = forms.Upcoming_aptForm(request.POST or None, request.FILES or None, instance=appt)
     if form.is_valid():
         form.save()
         return redirect('events')
     return render(request, "update_appt.html",{"appt":appt,"form":form})
 
+
+def my_appts(request):
+    event = Upcomming_apt.objects.get(doc=request.user.id)
+    return render(request,"my_appts.html",{"event":event})
+
+def admin_approval(request):
+    #get venues
+    venues = Venue.objects.all()
+    
+
+    appts_count = Upcomming_apt.objects.all().count()
+    venue_count = Venue.objects.all().count()
+    dentist_count = Dentist.objects.all().count()
+
+    appts = Upcomming_apt.objects.all().order_by('-apt_time')
+
+    if request.user.is_superuser:
+        if request.method=="POST":
+            id_list = request.POST.getlist('boxes')
+            #uncheck all appointments
+            appts.update(approved=False)
+            #update the database
+            for x in id_list:
+                Upcomming_apt.objects.filter(pk=int(x)).update(approved=True)
+            messages.success(request,"Appt list approval submitted")
+            return redirect('events')
+        else:
+            return render(request,"admin_approval.html",{"appts":appts,
+            "appts_count":appts_count,"venue_count":venue_count,"dentist_count":dentist_count,
+            "venues":venues})
+    else:
+        messages.success(request,"Access Denied")
+        return redirect('events')
+
+def venue_appts(request, venue_id):
+    venue = Venue.objects.get(id=venue_id)
+    appts = venue.upcomming_apt_set.all()
+    if appts:
+        return render(request,"venue_appts.html",{"appts":appts})
+    else:
+        messages.success(request,"No Appointments for this venue")
+        return redirect('admin-approval')
+    
+def appt_details(request, appt_id):
+    appts = Upcomming_apt.objects.get(id=appt_id)
+    return render(request,"appt_details.html",{"appts":appts})
+
+def apply_job(request):
+    if request.method=="POST":
+        form = forms.JobdataForm(request.POST or None)
+        if form.is_valid():
+            form.save()
+        else:
+            position = request.POST['position']
+            fname = request.POST['fname']
+            lname = request.POST['lname']
+            phone_number = request.POST['phone_number']
+            email_address = request.POST['email_address']
+            education= request.POST['education']
+            age = request.POST['age']
+            description = request.POST['description']
+
+            messages.success(request,("There was an error please try again"))
+            #return redirect("events")
+            return render(request, "events.html",{"position":position,"fname":fname,
+            "lname":lname,"phone_number":phone_number,"email_address":email_address,
+            "education":education,"age":age,"description":description})
+        messages.success(request,("application submitted"))
+        return redirect("events")
+    else:
+        return render(request,"events.html",{})
 
 

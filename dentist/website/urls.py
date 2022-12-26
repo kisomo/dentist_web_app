@@ -24,6 +24,15 @@ urlpatterns = [
     path(r'getWebdata/', views.getWebdata, name='getWebdata'),
     path('search_venues', views.search_venues, name='search-venues'),
     path('update_appt/<upcomming_apt_id>', views.update_appt, name='update-appt'),
+    path('delete_appt/<appointment_id>', views.delete_appt, name='delete-appt'),
+    path('appointment_txt', views.appointment_txt, name='appointment-txt'),
+    path('appointment_csv', views.appointment_csv, name='appointment-csv'),
+    path('appointment_pdf', views.appointment_pdf, name='appointment-pdf'),
+    path('my_appts', views.my_appts, name='my-appts'),
+    path('admin_approval', views.admin_approval, name='admin-approval'),
+    path('venue_appts/<venue_id>', views.venue_appts, name='venue-appts'),
+    path('appt_details/<appt_id>', views.appt_details, name='appt-details'),
+    path('apply_job>', views.apply_job, name='apply-job'),
     
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

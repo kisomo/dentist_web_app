@@ -78,7 +78,7 @@
   background-color:#00aeef !important;
   color:white;
   text-align: center;
-  display: flex;
+  /*display: flex;*/
 }
 
 .add-dentist{
@@ -99,7 +99,7 @@
   background-color:#00aeef !important;
   color:white;
   text-align: center;
-  display: flex;
+  /*display: flex;*/
 }
 .add-venues{
   border-style: none;
@@ -204,6 +204,9 @@
 .button-cpp-2{
   border-style: groove;
 }
+.apply-job{
+  border-style: groove;
+}
 </style>
 
 
@@ -225,11 +228,14 @@
 
     <div class="events">
     <h3>Upcomming Appointments</h3>
+    <div class="card-footer text-muted">
+      <a href="{% url 'admin-approval' %}" class="btn btn-outline-secondary btn-sm">Admin Approval</a>
+    </div>
+   
     {% for event in event_list %}
+    <h4>logged in as : {{ user }}</h4>
+    <h4>manager : {{event.manager}} </h4>
     <div class="card">
-      <!-- <div class="card-header">
-          {{ event.venue }}
-      </div> -->
       <div class="card-body">
         <h5 class="card-title"> Venue: {{ event.venue }}</h5>
         <p class="card-text"> 
@@ -241,52 +247,60 @@
               <li>Phone: {{ event.phone_number }}</li>
               <li>Email: {{ event.email_address }}</li>
               <li>Status: {{ event.is_done }}</li>
+              <li>Days till: {{ event.Days_till }}</li>
+              <li>Past: {{ event.Is_past }}</li>
           </ul>
           </br></br>
         </p>
       </div>
+      {% if user == event.manager %}
       <div class="card-footer text-muted">
         <a href="{% url 'update-appt' event.id %}" class="btn btn-outline-secondary btn-sm">update appointment</a>
-        <a href="events.html" class="btn btn-outline-danger btn-sm">delete appointment</a>
+        <a href="{% url 'delete-appt' event.id %}" class="btn btn-outline-danger btn-sm">delete appointment</a>
       </div>
+      {% else %}
+      you are not the manager
+      {% endif %}
     </div> 
     {% endfor %}
     <div class="card-footer text-muted">
-      <a href="events.html" class="btn btn-outline-secondary btn-sm">download text file</a>
-      <a href="events.html" class="btn btn-outline-danger btn-sm">download csv</a>
+      <a href="{% url 'appointment-txt' %}" class="btn btn-outline-secondary btn-sm">download text file</a>
+      <a href="{% url 'appointment-csv' %}" class="btn btn-outline-secondary btn-sm">download csv</a>
     </div>
     <div class="card-footer text-muted">
-      <a href="events.html" class="btn btn-outline-danger btn-sm">download pdf</a>
+      <a href="{% url 'appointment-pdf' %}" class="btn btn-outline-secondary btn-sm">download pdf</a>
+      <a href="{% url 'my-appts' %}" class="btn btn-outline-seconadry btn-sm">my appointments</a>
     </div>
+   
 
-    <!--<nav aria-label="Page navigation example"> -->
+
+    <nav aria-label="Page navigation example"> 
       <ul class="pagination">
         {% if event_list.has_previous %}
-          <li class="page-item"><a class="page-link" href="{% url 'events' %}?page=1">&laquo First</a></li>
-          <li class="page-item"><a class="page-link" href="{% url 'events' %}?page={{ event_list.previous_page_number }}">
+          <li class="page-item"><a class="page-link" href="?page=1">&laquo First</a></li>
+          <li class="page-item"><a class="page-link" href="?page={{ event_list.previous_page_number }}">
             Previous</a></li>
         {% endif %}
 
         <!-- apt_nums = event_list.paginator.num_pages -->
-        <!-- 
         <li class="page-item disabled"><a href="#" class="page-link">
           Page {{ event_list.number }} of {{ event_list.paginator.num_pages }}
           </a>
         </li>
-        -->
-        {% for i in apt_nums %}
-        <li class="page-item">
-          <a class="page-link" href="{% url 'events' %}?page = {{ forloop.counter }}">{{ forloop.counter }}</a>
-        </li>
-        {% endfor %}
         
+        <!--{% for i in apt_nums %}
+        <li class="page-item">
+          <a class="page-link" href="?page = {{ forloop.counter }}">{{ forloop.counter }}</a>
+        </li> 
+        {% endfor %}-->
+
         {% if event_list.has_next %}
-        <li class="page-item"><a class="page-link" href="{% url 'events' %}?page = {{ event_list.next_page_number }}">next</a></li>
-        <li class="page-item"><a class="page-link" href="{% url 'events' %}?page = {{ event_list.paginator.num_pages }}">
+        <li class="page-item"><a class="page-link" href="?page = {{ event_list.next_page_number }}">next</a></li>
+        <li class="page-item"><a class="page-link" href="?page = {{ event_list.paginator.num_pages }}">
           last &raquo</a></li>
         {% endif %}
       </ul>
-    <!--</nav> -->
+    </nav> 
     </div>
     
     <div class="dentists">
@@ -328,13 +342,17 @@
         <h3> Venue list</h3>
         {% for venue in venue_list %}
         <ul>
-          <li>Venue Name: {{ venue.vname}}</li>
+          <li><a href="{% url 'venue-appts' venue.id%}" 
+            class="btn btn-sm btn-secondary">Venue Name: {{ venue.vname}}</a></li>
           <li>Venue Address: {{ venue.address}}</li>
           <li>Venue Zip Code: {{ venue.zip_code}}</li>
           <li>Venue Phone: {{ venue.phone}}</li>
           <li>Venue web URL: {{ venue.web}}</li>
           <li>email address: {{ venue.email_address}}</li>
         </ul></br>
+        {% if venue.venue_image %}
+            <img src='{{venue.venue_image.url}}' width="300">
+        {% endif %}
         {% endfor %}
       </div>
       <div class="add-venue">
@@ -343,7 +361,7 @@
         You have submitted a new Venue
         {% else %}
         <div class="form-group">
-          <form action="" method="POST">
+          <form action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {{ venueform.as_p }}
             <input type="submit" value="Submit-venue" name ="venue_b" class="btn btn-secondary">
@@ -440,6 +458,80 @@
             <input type="submit" value="Submit-cppdata" name="cpp2" class="btn btn-secondary">
           </form>
           {% endif %}
+        </div>
+        <div class="apply-job">
+          {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+              <strong>{{message}}</strong>.
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">&times;</button>
+            </div>
+            {% endfor %}
+          {% endif %}
+          <h3>Apply for Jobs</h3>
+          <br>
+          <form method="POST" action="{% url 'apply-job' %}">
+            {% csrf_token %}
+            <div class="mb-3" value={{position}}>
+              <h4>select position</h4>
+              <!--<input type="text" class="form-control" 
+              aria-describedby="emailHelp" placeholder="Dentist" name="position"> -->
+              <input type="radio" id="dentist" name="position" value="Dentist">
+              <label for="dentist">Dentist</label><br>
+              <input type="radio" id="nurse" name="position" value="Nurse">
+              <label for="nurse">Nurse</label><br>
+              <input type="radio" id="technician" name="position" value="Technician">
+              <label for="technician">Technician</label>
+            </div>
+
+            <div class="mb-3">
+              <input type="text" class="form-control" 
+              aria-describedby="emailHelp" placeholder="First Name" name="fname" value={{fname}}>
+            </div>
+
+            <div class="mb-3">
+              <input type="text" class="form-control" 
+              aria-describedby="emailHelp" placeholder="Last Name" name="lname" value={{lname}}>
+            </div>
+
+            <div class="mb-3">
+              <input type="text" class="form-control"  
+              aria-describedby="emailHelp" placeholder="Phone Number" name="phone_number"
+              value={{phone_number}}>
+            </div>
+
+            <div class="mb-3">
+              <input type="email" class="form-control"
+              aria-describedby="emailHelp" placeholder="Email Address" name="email_address"
+              value={{email_address}}>
+            </div>
+
+            <div class="mb-3" value ={{education}}>
+              <h4>Select Education</h4>
+              <!--<input type="text" class="form-control"
+              placeholder="Education" name="education"> -->
+              <input type="radio" id="ba" name="education" value="Bachelors">
+              <label for="ba">Bachelors</label><br>
+              <input type="radio" id="ma" name="education" value="Masters">
+              <label for="ma">Masters</label><br>
+              <input type="radio" id="phd" name="education" value="Doctorate">
+              <label for="phd">Doctorate</label>
+            </div>
+
+            <div class="mb-3">
+              <input type="text" class="form-control"
+              placeholder="Age" name="age" value={{age}}>
+            </div>
+
+            <div class="mb-3">
+              <input type="text" class="form-control"
+              placeholder="Description" name="description" value={{description}}>
+            </div>
+
+            <button type="submit" class="btn btn-primary">apply</button>
+          </form>
+          <br>
+
         </div>
       </div>
   </div>

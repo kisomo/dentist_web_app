@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import date
 # Create your models here.
 
 #class Customer(models.Model):
@@ -43,6 +44,9 @@ class Venue(models.Model):
     phone = models.CharField('Venue Phone', max_length=25)
     web = models.URLField('Venue Website Address')
     email_address = models.EmailField('Venue Email Address')
+    manager = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
+    owner = models.IntegerField('Venue Owner', blank=False, default=1)
+    venue_image = models.ImageField(null=True, blank=True, upload_to='images/')
 
     def __str__(self):
         return self.vname 
@@ -50,6 +54,7 @@ class Venue(models.Model):
 class Upcomming_apt(models.Model):
     doc = models.ForeignKey(Dentist, blank=True, null=True, on_delete=models.CASCADE)
     venue = models.ForeignKey(Venue, blank=True, null=True, on_delete=models.CASCADE)
+    manager = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     fname = models.CharField('Customer First Name', max_length=200)
     lname = models.CharField('Customer Last Name', max_length=200)
     phone_number = models.CharField('Customer Phone Number', max_length=25)
@@ -59,9 +64,26 @@ class Upcomming_apt(models.Model):
     is_done = models.BooleanField(default=False)
     description = models.TextField(blank=True)
     #assistance_tracker = models.ForeignKey(User,blank=True, null=True, on_delete=models.SET_NULL )
+    approved = models.BooleanField("Approved",default=False)
 
     def __str__(self):
         return self.fname 
+    
+    @property
+    def Days_till(self):
+        today = date.today()
+        days_till = self.apt_time.date()-today
+        days_till = str(days_till).split(",",1)[0]
+        return days_till
+
+    @property 
+    def Is_past(self):
+        today = date.today()
+        if self.apt_time.date() < today:
+            res = "past due"
+        else:
+            res = "future"
+        return res
 
 class Finished_apt(models.Model):
     doc = models.ForeignKey(Dentist, blank=True, null=True, on_delete=models.CASCADE)
@@ -101,3 +123,28 @@ class Cppdata(models.Model):
     file_extension = models.CharField('File Extension', max_length=200)
     def __str__(self):
         return self.file_name + ' ' + self.file_location + '' + self.file_extension
+
+class Jobdata(models.Model):
+    DEGREES = (
+        ('BA', 'Bachelors'),
+        ('MA', 'Masters'),
+        ('DR', 'PhD'),
+    )
+    POSITION = (
+        ('RN', 'NURSE'),
+        ('TEC', 'TECHNICIAN'),
+        ('DEN', 'DENTIST'),
+    )
+    position= models.CharField('Position', max_length=20, choices=POSITION, null=False)
+    fname = models.CharField('First Name', max_length=200)
+    lname = models.CharField('Last Name', max_length=200)
+    phone_number = models.CharField('Phone Number', max_length=25)
+    email_address = models.EmailField('Email', max_length=25)
+    education= models.CharField('Education', max_length=20, choices=DEGREES, null=False)
+    age = models.IntegerField()
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.fname + ' ' + self.lname
+    
+

@@ -22,12 +22,11 @@
 {% endfor %}
 {% endif %}
 
-  <div class="shadow p-4 mb-5 bg-body rounded">
+  <div class="shadow p-5 mb-5 bg-body rounded">
   <h1>Register</h1>
   <br/><br/>
   <form action="{% url 'register_user' %}" method="POST">
       {% csrf_token %}
-  
        {{ form.as_p}}
       <input type="submit" value="Submit" class="btn btn-secondary">
   </form>

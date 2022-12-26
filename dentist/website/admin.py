@@ -1,9 +1,11 @@
 from django.contrib import admin
+from django.contrib.auth.models import Group
 
-from . models import Venue, Upcomming_apt, Finished_apt, Dentist, Nurse, Webdata, Cppdata, Htmldata
+from . models import Venue, Upcomming_apt, Finished_apt, Dentist, Nurse, Webdata,Cppdata, Htmldata, Jobdata
 
 
 admin.site.register(Finished_apt)
+#admin.site.unregister(Group)
 
 
 #admin.site.register(Venue)
@@ -30,8 +32,9 @@ admin.site.register(Dentist, DentistAdmin)
 
 class upcoming_apt_Admin(admin.ModelAdmin):
     fields = (("venue","fname","lname","doc"),"phone_number","email_address","apt_time",
-    "nurses","is_done","description") #,"assistance_track")
-    list_display = ("venue","fname","lname","doc","phone_number","email_address","apt_time")
+    "nurses","is_done","description","approved") #,"assistance_track")
+    list_display = ("venue","fname","lname","doc","phone_number","email_address",
+    "apt_time","approved")
     list_filter = ("apt_time","venue")
     ordering = ("fname",)
 admin.site.register(Upcomming_apt, upcoming_apt_Admin)
@@ -42,3 +45,4 @@ admin.site.register(Cppdata)
 
 admin.site.register(Htmldata)
 
+admin.site.register(Jobdata)

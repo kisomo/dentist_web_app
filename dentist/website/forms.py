@@ -1,7 +1,7 @@
 
 from django import forms 
 from django.forms import ModelForm
-from . models import Dentist, Venue,Webdata, Cppdata, Htmldata, Upcomming_apt
+from . models import Dentist, Venue,Webdata, Cppdata, Htmldata, Upcomming_apt, Jobdata
 
 '''
 class DentistForm(forms.Form):
@@ -14,15 +14,19 @@ class DentistForm(forms.Form):
 '''
 
 class Upcoming_aptForm(forms.ModelForm):
+    #doc = forms.ModelChoiceField(queryset=Upcomming_apt.objects.all())
     class Meta:
         model = Upcomming_apt
-        fields = ("fname","lname","phone_number")
+        fields = ("fname","lname","phone_number","doc", "manager")
+        
         widgets = {
             'fname': forms.TextInput(attrs= {'class':'form-control'}),
             'lname': forms.TextInput(attrs= {'class':'form-control'}),
             'phone_number': forms.TextInput(attrs= {'class':'form-control'}),
+            'doc': forms.Select(attrs= {'class':'form-select'}),
+            'manager': forms.Select(attrs= {'class':'form-select'}),
         }
-
+        
 
 class DentistForm2(ModelForm):
     class Meta:
@@ -39,7 +43,8 @@ class DentistForm2(ModelForm):
 class VenueForm(ModelForm):
     class Meta:
         model = Venue
-        fields = ("vname","address","zip_code","phone","web","email_address")
+        fields = ("vname","address","zip_code","phone","web","email_address",
+        "venue_image") #,"manager") #,"owner")
         widgets = {
             'vname': forms.TextInput(attrs= {'class':'form-control'}),
             'address': forms.TextInput(attrs= {'class':'form-control'}),
@@ -47,6 +52,8 @@ class VenueForm(ModelForm):
             'phone': forms.TextInput(attrs= {'class':'form-control'}),
             'web': forms.TextInput(attrs= {'class':'form-control'}),
             'email_address': forms.TextInput(attrs= {'class':'form-control'}),
+            #'manager': forms.TextInput(attrs= {'class':'form-control'}),
+            #'owner': forms.TextInput(attrs= {'class':'form-control'}),
         }
 
 
@@ -80,3 +87,8 @@ class CppdataForm(forms.ModelForm):
             'file_extension': forms.TextInput(attrs= {'class':'form-control'}),
         }
 
+class JobdataForm(forms.ModelForm):
+    class Meta:
+        model = Jobdata
+        fields = "__all__"
+        
