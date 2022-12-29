@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.models import Group
 
 from . models import Venue, Upcomming_apt, Finished_apt, Dentist, Nurse, Webdata,Cppdata, Htmldata, Jobdata
-
+from .models import Interview
 
 admin.site.register(Finished_apt)
 #admin.site.unregister(Group)
@@ -46,3 +46,6 @@ admin.site.register(Cppdata)
 admin.site.register(Htmldata)
 
 admin.site.register(Jobdata)
+
+admin.site.register(Interview)
+

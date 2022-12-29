@@ -1,7 +1,8 @@
 
 from django import forms 
 from django.forms import ModelForm
-from . models import Dentist, Venue,Webdata, Cppdata, Htmldata, Upcomming_apt, Jobdata
+from . models import Dentist, Venue,Webdata, Cppdata, Htmldata, Upcomming_apt, Jobdata, Interview
+
 
 '''
 class DentistForm(forms.Form):
@@ -91,4 +92,9 @@ class JobdataForm(forms.ModelForm):
     class Meta:
         model = Jobdata
         fields = "__all__"
-        
+
+class InterviewForm(forms.ModelForm):
+    class Meta:
+        model = Interview
+        fields = "__all__"
+

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
+from django.core.validators import MinValueValidator, MaxValueValidator
 # Create your models here.
 
 #class Customer(models.Model):
@@ -147,4 +148,19 @@ class Jobdata(models.Model):
     def __str__(self):
         return self.fname + ' ' + self.lname
     
+
+class Interview(models.Model):
+    firstname = models.CharField('First Name', max_length=200)
+    lastname = models.CharField('Last Name', max_length=200)
+    interview_time= models.DateTimeField('Interview Time', blank=True, null=True)
+    interviewer = models.CharField('Interviewer', max_length=200)
+    year = models.PositiveSmallIntegerField(
+        validators=[
+            MinValueValidator(1900),
+            MaxValueValidator(2023),
+        ], default= 2008
+    )
+
+    def __str__(self):
+        return self.firstname + ' ' + self.lastname
 

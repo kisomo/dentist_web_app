@@ -32,7 +32,11 @@ urlpatterns = [
     path('admin_approval', views.admin_approval, name='admin-approval'),
     path('venue_appts/<venue_id>', views.venue_appts, name='venue-appts'),
     path('appt_details/<appt_id>', views.appt_details, name='appt-details'),
-    path('apply_job>', views.apply_job, name='apply-job'),
+    path('apply_job', views.apply_job, name='apply-job'),
+    #ath('interviews_all', views.interviews_all, name='interviews-all'),
+    path('interviews_add', views.interview_add, name='interview-add'),
+    #path('interview_form', views.interview_form, name='interview-form'),
+    path('interviews/<int:pk>/edit>', views.interview_edit, name='interview-edit'),
     
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

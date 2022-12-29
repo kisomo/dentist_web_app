@@ -4,12 +4,29 @@
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" 
+    rel="stylesheet" 
+    integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" 
+    crossorigin="anonymous">
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" 
+    integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" 
+    crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" 
+    integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" 
+    crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" 
+    integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" 
+    crossorigin="anonymous"></script>
+
+    <script defer src="script_outside.js"></script>
+    <link rel="stylesheet" href="style_outside.css">
 
   <!-- ***** Header Area End ***** -->
+
 {% block content %}
 
 <style>
@@ -172,6 +189,10 @@
 .button-html-2{
   border-style: groove;
 }
+.button-html-3 .modal{
+  border-style: groove;
+  /*z-index: 1000;*/
+}
 .button-py{
   border-style: groove;
   /*max-height: 1000px;*/
@@ -206,6 +227,17 @@
 }
 .apply-job{
   border-style: groove;
+}
+
+.modals-page{
+  border-style: groove;
+  /*max-height: 1000px;*/
+  display: flex;
+  flex-direction: column;
+  max-height: fit-content;
+  max-width: fit-content;
+  overflow-y: auto;
+  flex: 1;
 }
 </style>
 
@@ -413,8 +445,145 @@
           </form>
           {% endif %}
         </div>
+        <div  class="button-html-3">
+          <!--
+              hx-get="#" hx-trigger="load"
+          -->
+          <h5>interviews</h5>
+
+          {% for interview in interview_list %}
+          <ul id ="interview-{{ interview.pk }}"> 
+              <li> 
+                  First Name     : {{interview.firstname}}
+                  <!-- <a class="btn btn-primary btn-sm" href="{% url 'interview-edit' pk=interview.pk %}">Edit</a> -->
+                  <button type="button" class="btn btn-primary" data-toggle="modal" 
+                    data-target="#editinterviewModal">
+                      Edit 
+                    </button>
+
+                    <!-- Modal -->
+                    <form method="POST" action="/interview_edit/{{interview.id}}">
+                    <div class="modal fade" id="editinterviewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                      aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Interview</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          
+                            {% csrf_token %}
+                            <div class="modal-body">
+                              <!-- {{inter_form}} -->
+                              <input type="text" name="firstname" class="form-control" placeholder="firstname">
+                              <input type="text" name="lastname" class="form-control" placeholder="lastname">
+                              <input type="datetime-local" name="interview_time" class="form-control" placeholder="interview_time">
+                              <input type="text" name="interviewer" class="form-control" placeholder="interviewer">
+                              <input type="number" name="year" class="form-control" placeholder="year">
+                            </div>
+                          
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+              </li>
+              <li> 
+                  Last Name      : {{interview.lastname}}
+              </li>
+              <li> 
+                  Interview Time : {{interview.interview_time}}
+              </li>
+              <li> 
+                  Interviewer    : {{interview.interviewer}}
+              </li>
+              <li> 
+                  Year : {{interview.year}}
+              </li>
+          </ul> <br><hr>
+          {% endfor %} <br>
+          
+         <!--  <a class="btn btn-primary btn-sm" href="{% url 'interview-add' %}">
+            Add Interview
+          </a> -->
+
+       <!--  <div style="padding-left:50px;">
+          <a href="{% url 'interview-add' %}" data-toggle="modal" data-target="#exampleModel" 
+          class="btn btn-primary btn-sm">add interview</a>
+        </div>
+   
+        <div id="exampleModel" class="modal" tabindex="-1" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                {{InterviewForm.as_p}}
+                data here
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div> -->
+        
+        <!-- Button trigger modal -->
+       
+            <button type="button" class="btn btn-primary" data-toggle="modal" 
+            data-target="#interviewModal">
+              Add Interview 
+            </button>
+
+            <!-- Modal -->
+            <form method="POST" action="interviews_add">
+            <div class="modal fade" id="interviewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Interview</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  
+                    {% csrf_token %}
+                    <div class="modal-body">
+                      <!-- {{inter_form}} -->
+                      <input type="text" name="firstname" class="form-control" placeholder="firstname">
+                      <input type="text" name="lastname" class="form-control" placeholder="lastname">
+                      <input type="datetime-local" name="interview_time" class="form-control" placeholder="interview_time">
+                      <input type="text" name="interviewer" class="form-control" placeholder="interviewer">
+                      <input type="number" name="year" class="form-control" placeholder="year">
+                    </div>
+                  
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+           </form>
+
+            <button id="close-btn" class="btn btn-success">
+              Close
+            </button>
+
+
+        </div>
       </div>
-      
+
+
       <div class="button-py">
         <div class="button-py-1">
             <form action="/external_py/" method="post">
@@ -536,6 +705,51 @@
       </div>
   </div>
   </div>
+
+  <div class="modals-page">
+     <header>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="col-sm">
+          <a class="navbar-brand flex-grow-1" style="text-align:center; color:#fff;margin-left:25px">
+              <i style="color:yellowgreen;" class="fas fa-user-atl">
+
+              </i>&nbsp;&nbsp;List
+          </a>
+        </div>
+      </nav>
+     </header>
+     
+     <div class="container">
+       <table  class="table table-ordered" id="example" style="text-align:center;">
+        <thead class="table-success">
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Interview Time</th>
+            <th scope="col">Interviewer</th>
+            <th scope="col">Year</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for interview in interviews %}
+          <tr>
+             <td> {{interview.id}} </td>
+             <td> {{interview.firstname}} </td>
+             <td> {{interview.lastname}} </td>
+             <td> {{interview.interview_time}} </td>
+             <td> {{interview.interviewer}} </td>
+             <td> {{interview.year}} </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+       </table>
+       {% for inter in interviews %}
+           {{interview.id}}
+       {% endfor %}
+     </div>
+
+  </div> <!-- End wrapper -->
 </div>
 
 

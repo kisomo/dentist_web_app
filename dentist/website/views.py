@@ -1,8 +1,10 @@
 from django.shortcuts import render
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, HttpRequest, StreamingHttpResponse, FileResponse
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 from django.core.mail import send_mail
-from . models import Venue, Upcomming_apt, Dentist, Webdata, Cppdata, Htmldata
+from . models import Venue, Upcomming_apt, Dentist, Webdata, Cppdata, Htmldata, Interview
 from . import forms 
 import csv 
 import io 
@@ -27,6 +29,7 @@ def events(request):
 
     dentist_list = Dentist.objects.all().order_by("lname")
     venue_list = Venue.objects.all().order_by("vname")
+    interview_list = Interview.objects.all()
     
     missed_apt_list = Upcomming_apt.objects.filter(is_done=0)
 
@@ -86,7 +89,7 @@ def events(request):
     
     return render(request, "events.html",{"event_list":event_list,
     "dentist_list":dentist_list,
-    "venue_list":venue_list,
+    "venue_list":venue_list,"interview_list":interview_list,
      "dentistform":dentistform,"venueform":venueform, "submitted_dentist":submitted_dentist,
      "submitted_venue":submitted_venue,"submitted_web":submitted_web, "submitted_cpp":submitted_cpp,
      "submitted_html":submitted_html,
@@ -379,5 +382,56 @@ def apply_job(request):
         return redirect("events")
     else:
         return render(request,"events.html",{})
+
+
+def interview_add(request):
+    interviews = Interview.objects.all()
+    if request.method=="POST":
+        inter_form = forms.InterviewForm(request.POST)
+        if inter_form.is_valid():
+            inter_form.save()
+            return redirect('events')
+    else:
+        inter_form = forms.InterviewForm()
+    return render(request, "events.html",{"inter_form":inter_form,
+    "interviews":interviews})
+
+#def interviews_all(request):
+#    interviews = Interview.objects.all()
+#    return render(request, "events.html",{"interviews":interviews})
+
+def interview_edit(request, pk):
+    interview = get_object_or_404(Interview, pk=pk)
+    if request.method=="POST":
+        form = forms.InterviewForm(request.POST, instance=interview)
+        if form.is_valid():
+            form.save()
+            #return redirect('events')
+            return HttpResponse(form.as_p())
+    else:
+        form = forms.InterviewForm(instance=interview)
+    return render(request, "events.html",{"InterviewForm":form,"interview":interview})
+
+#def interview_list(request):
+#    return render(request, "interview_list.html",{
+#        "interviews_list":Interview.objects.all()})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
